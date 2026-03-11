@@ -1,0 +1,4 @@
+name: AdvancedFishing
+version: '0.1'
+main: de.yannik.advancedFishing.AdvancedFishing
+api-version: '1.21'
