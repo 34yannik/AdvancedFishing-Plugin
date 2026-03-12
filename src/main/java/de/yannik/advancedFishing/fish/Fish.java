@@ -87,4 +87,18 @@ public enum Fish {
     public double getRandomWeight() {
         return minWeight + Math.random() * (maxWeight - minWeight);
     }
+
+    public String getKeyName() {
+        return name.toLowerCase().replace(" ", "_");
+    }
+
+    public static Fish fromKeyName(String keyName) {
+
+        for(Fish fish : Fish.values()) {
+            if(fish.getKeyName().equals(keyName))
+                return fish;
+        }
+
+        return null;
+    }
 }

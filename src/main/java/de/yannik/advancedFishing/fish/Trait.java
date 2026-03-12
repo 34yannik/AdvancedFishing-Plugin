@@ -3,6 +3,7 @@ package de.yannik.advancedFishing.fish;
 import net.md_5.bungee.api.ChatColor;
 
 public enum Trait {
+    NORMAL("", ChatColor.GRAY, 1.0, 1.0, 1.0),
     SHINY("Shiny", ChatColor.GOLD, 2.0, 1.5, 1.2),
     STRIPED("Striped", ChatColor.AQUA, 1.2, 1.0, 1.0),
     DARK("Dark", ChatColor.DARK_GRAY, 1.5, 1.0, 1.1),
