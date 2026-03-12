@@ -10,8 +10,8 @@ AdvancedFishing is a Minecraft plugin that expands the vanilla fishing system. W
 - **Traits**: Special properties like `Shiny`, `Ancient`, etc.  
 - **Sizes**: Fish can have different sizes (Tiny, Huge)  
 - **Configurable**: Easy to extend the fish system  
-- **Developer Friendly**: Clean code structure for adding new features  
-- **Command `/givefish`** to give custom fish  
+- **Developer Friendly**: Clean code structure for adding new features
+- **Saving Playerdata**: Playerdata saving with SQLite
 
 ---
 
