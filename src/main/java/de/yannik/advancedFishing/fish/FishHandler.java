@@ -40,7 +40,7 @@ public class FishHandler {
         int randomIndex = random.nextInt(0, fishMaterials.size());
         Material fishMaterial = fishMaterials.get(randomIndex);
 
-        double weight = Math.round(random.nextDouble(fish.getMinWeight(), fish.getMaxWeight()) * 100.0) / 100.0;
+        double weight = (Math.round(random.nextDouble(fish.getMinWeight() * size.getWeightMultiplier(), fish.getMaxWeight()) * 100.0) / 100.0);
 
         ItemStack fishItem = new ItemStack(fishMaterial, 1);
         ItemMeta fishMeta = fishItem.getItemMeta();

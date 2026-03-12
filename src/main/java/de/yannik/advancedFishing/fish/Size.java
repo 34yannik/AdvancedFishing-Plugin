@@ -1,9 +1,9 @@
 package de.yannik.advancedFishing.fish;
 
 public enum Size {
-    TINY("Tiny", 0.2),
-    NORMAL("", 1),
-    HUGE("Huge", 3);
+    TINY("Tiny", 0.2, 1.5),
+    NORMAL("", 1, 1.0),
+    HUGE("Huge", 3, 2.2);
 
     private final String name;
     private final double weightMultiplier;
