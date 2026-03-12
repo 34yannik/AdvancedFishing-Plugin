@@ -3,3 +3,6 @@ version: '0.1'
 main: de.yannik.advancedFishing.AdvancedFishing
 api-version: '1.21'
 author: 34yannik
+commands:
+  givefish:
+    description: Gives you or another person a specified fish.

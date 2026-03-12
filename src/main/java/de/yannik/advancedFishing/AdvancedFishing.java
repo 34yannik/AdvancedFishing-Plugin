@@ -1,5 +1,6 @@
 package de.yannik.advancedFishing;
 
+import de.yannik.advancedFishing.commands.GivefishCMD;
 import de.yannik.advancedFishing.data.Database;
 import de.yannik.advancedFishing.data.PlayerStatsDAO;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,6 +21,9 @@ public final class AdvancedFishing extends JavaPlugin {
         database = new Database();
         database.Connect();
         playerStatsDAO = new PlayerStatsDAO(instance, database);
+
+        getCommand("givefish").setExecutor(new GivefishCMD());
+        getCommand("givefish").setTabCompleter(new GivefishCMD());
 
     }
 
