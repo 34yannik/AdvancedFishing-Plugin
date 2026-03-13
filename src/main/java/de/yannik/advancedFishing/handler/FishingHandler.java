@@ -1,6 +1,7 @@
 package de.yannik.advancedFishing.handler;
 
 import de.yannik.advancedFishing.AdvancedFishing;
+import de.yannik.advancedFishing.data.PlayerStatsDAO;
 import de.yannik.advancedFishing.fish.Fish;
 import de.yannik.advancedFishing.fish.FishHandler;
 import de.yannik.advancedFishing.fish.Size;
@@ -16,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class FishingHandler implements Listener {
 
@@ -149,7 +151,10 @@ public class FishingHandler implements Listener {
 
         private void complete() {
             player.sendTitle(ChatColor.GOLD + "Fish caught!", "", 0, 40, 0);
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1.0F);
+
+            giveReward();
+
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
             cancel();
         }
 
@@ -165,11 +170,19 @@ public class FishingHandler implements Listener {
                 }
             }
 
+            if(fishable.isEmpty()) {
+                for(Fish fish : Fish.values()) {
+                    if(fish.getBiome() == Biome.RIVER)
+                        fishable.add(fish);
+                }
+            }
+
             double totalWeight = 0;
 
             for (Fish fish : fishable) {
                 totalWeight += fish.getRarity().getChanceWeight();
             }
+
 
             double random = Math.random() * totalWeight;
 
@@ -244,10 +257,52 @@ public class FishingHandler implements Listener {
                     player.sendMessage("§cYou'r inventory was full, the fish has been dropped.");
                 }
 
+                Fish finalSelected = selected;
+                AdvancedFishing.getInstance()
+                        .getPlayerStatsDAO()
+                        .loadPlayer(player.getUniqueId())
+                        .thenAccept(stats -> {
+
+                            stats.setFishCaught(stats.getFishCaught()+1);
+
+                            AdvancedFishing.getInstance().getPlayerStatsDAO().savePlayer(stats);
+
+                            double xpMulti = trait.getXpMultiplier() + size.getXpMultiplier();
+
+                            int baseXP = finalSelected.getRarity().getBaseXP();
+                            int minXP = baseXP - 5;
+                            int maxXP = baseXP + 5;
+
+                            int randomXP = rnd.nextInt(maxXP - minXP + 1) + minXP;
+                            int xpToAdd = (int) Math.round(randomXP * xpMulti);
+
+                            giveXPReward(stats, xpToAdd);
+
+                        });
+
             }
             else {
                 player.sendMessage("§cYou didn't catch anything.");
             }
+        }
+
+        public void giveXPReward(PlayerStatsDAO.PlayerStats stats, int xp) {
+
+            List<Integer> level = LevelHandler.addXP(stats, xp);
+
+            player.sendMessage("§7+ §9" + xp + "XP");
+
+            if(level.get(0) < level.get(1)) {
+                player.sendMessage("§7========================");
+                player.sendMessage("§5Fishing Levelup!");
+                player.sendMessage("");
+                player.sendMessage("§9Level " + level.get(0) + " -> Level " + level.get(1));
+                player.sendMessage("");
+                player.sendMessage("§7========================");
+
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.7F, 1.0F);
+            }
+
         }
 
         public void cancel() {

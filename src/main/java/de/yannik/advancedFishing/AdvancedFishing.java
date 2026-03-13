@@ -1,5 +1,6 @@
 package de.yannik.advancedFishing;
 
+import de.yannik.advancedFishing.commands.FishstatsCMD;
 import de.yannik.advancedFishing.commands.GivefishCMD;
 import de.yannik.advancedFishing.data.Database;
 import de.yannik.advancedFishing.data.PlayerStatsDAO;
@@ -26,6 +27,8 @@ public final class AdvancedFishing extends JavaPlugin {
 
         getCommand("givefish").setExecutor(new GivefishCMD());
         getCommand("givefish").setTabCompleter(new GivefishCMD());
+        getCommand("fishstats").setExecutor(new FishstatsCMD());
+        getCommand("fishstats").setTabCompleter(new FishstatsCMD());
 
         Bukkit.getPluginManager().registerEvents(new FishingHandler(), this);
 

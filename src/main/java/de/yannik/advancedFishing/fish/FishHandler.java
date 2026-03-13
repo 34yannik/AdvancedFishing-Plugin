@@ -40,29 +40,52 @@ public class FishHandler {
         int randomIndex = random.nextInt(0, fishMaterials.size());
         Material fishMaterial = fishMaterials.get(randomIndex);
 
-        double weight = (Math.round(random.nextDouble(fish.getMinWeight() * size.getWeightMultiplier(), fish.getMaxWeight()) * 100.0) / 100.0);
+        double weight = (Math.round(random.nextDouble(
+                fish.getMinWeight() * size.getWeightMultiplier(),
+                fish.getMaxWeight()) * 100.0) / 100.0);
 
         ItemStack fishItem = new ItemStack(fishMaterial, 1);
         ItemMeta fishMeta = fishItem.getItemMeta();
 
-        fishMeta.setDisplayName(fish.getRarity().getColoredName() + " " +
-                size.getName() + " " +
-                trait.getColoredName() + " " +
-                fish.getRarity().getColor() + fish.getName() +
-                " §8[" + weight + "kg]");
+        List<String> nameParts = new ArrayList<>();
 
-        fishMeta.setLore(List.of(
-                "",
-                "Rarity: " + fish.getRarity().getColoredName(),
-                "Trait: " + trait.getColoredName(),
-                "Size: §b" + size.getName(),
-                "Weight: §9" + weight + "kg"
-        ));
+        nameParts.add(fish.getRarity().getColoredName());
+
+        if(size != Size.NORMAL){
+            nameParts.add(size.getName());
+        }
+
+        if(trait != Trait.NORMAL){
+            nameParts.add(trait.getColoredName());
+        }
+
+        nameParts.add(fish.getRarity().getColor() + fish.getName());
+
+        String displayName = String.join(" ", nameParts) + " §8[" + weight + "kg]";
+
+        fishMeta.setDisplayName(displayName);
+
+
+        List<String> lore = new ArrayList<>();
+
+        lore.add("");
+        lore.add("§7Rarity: " + fish.getRarity().getColoredName());
+
+        if(trait != Trait.NORMAL){
+            lore.add("§7Trait: " + trait.getColoredName());
+        }
+
+        if(size != Size.NORMAL){
+            lore.add("§7Size: §b" + size.getName());
+        }
+
+        lore.add("§7Weight: §9" + weight + "kg");
+
+        fishMeta.setLore(lore);
 
         fishItem.setItemMeta(fishMeta);
 
         return AddMetadata(fishItem, fish, trait, size);
-
     }
 
     private static ItemStack AddMetadata(ItemStack fishItem, Fish fish, Trait trait, Size size) {

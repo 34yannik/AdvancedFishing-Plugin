@@ -6,3 +6,5 @@ author: 34yannik
 commands:
   givefish:
     description: Gives you or another person a specified fish.
+  fishstats:
+    description: Look at your or others fishing stats.

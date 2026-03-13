@@ -1,5 +1,11 @@
 package de.yannik.advancedFishing.handler;
 
+import de.yannik.advancedFishing.AdvancedFishing;
+import de.yannik.advancedFishing.data.PlayerStatsDAO;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class LevelHandler {
 
     private static long[] levelCache = new long[200];
@@ -32,10 +38,25 @@ public class LevelHandler {
         return xpNext - xpCurrent;
     }
 
-    // XP hinzufügen und ggf. Level-Up zurückgeben
-    public static int addXP(long currentXP, long amount) {
-        long newXP = currentXP + amount;
-        return getLevelForXP(newXP);
+    public static List<Integer> addXP(PlayerStatsDAO.PlayerStats stats, long amount) {
+
+        stats.setCurrentXp(stats.getCurrentXp() + amount);
+        stats.setAlltimeXp(stats.getAlltimeXp() + amount);
+
+        List<Integer> leveledUp = new ArrayList<>();
+
+        leveledUp.add(stats.getLevel());
+
+        while (stats.getCurrentXp() >= getXPForLevel(stats.getLevel())) {
+            stats.setCurrentXp(stats.getCurrentXp() - getXPForLevel(stats.getLevel()));
+            stats.setLevel(stats.getLevel() + 1);
+        }
+
+        leveledUp.add(stats.getLevel());
+
+        AdvancedFishing.getInstance().getPlayerStatsDAO().savePlayer(stats);
+
+        return leveledUp;
     }
 
 }
