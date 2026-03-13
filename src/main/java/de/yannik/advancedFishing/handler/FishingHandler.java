@@ -1,20 +1,21 @@
 package de.yannik.advancedFishing.handler;
 
 import de.yannik.advancedFishing.AdvancedFishing;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import de.yannik.advancedFishing.fish.Fish;
+import de.yannik.advancedFishing.fish.FishHandler;
+import de.yannik.advancedFishing.fish.Size;
+import de.yannik.advancedFishing.fish.Trait;
+import org.bukkit.*;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
-import java.util.UUID;
-import java.util.Random;
+import java.util.*;
 
 public class FishingHandler implements Listener {
 
@@ -143,13 +144,110 @@ public class FishingHandler implements Listener {
                 else bar.append(ChatColor.GRAY + "-");
             }
             bar.append(ChatColor.GRAY + "]");
-            player.sendTitle(bar.toString(), "Fortschritt: " + (int)(progress*10) + "%", 0, 40, 0);
+            player.sendTitle(bar.toString(), "Progress: " + (int)(progress*10) + "%", 0, 40, 0);
         }
 
         private void complete() {
-            player.sendTitle(ChatColor.GOLD + "Fisch gefangen!", "", 0, 40, 0);
+            player.sendTitle(ChatColor.GOLD + "Fish caught!", "", 0, 40, 0);
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1.0F);
             cancel();
+        }
+
+        private void giveReward() {
+
+            Biome biome = player.getLocation().getBlock().getBiome();
+
+            List<Fish> fishable = new ArrayList<>();
+
+            for (Fish fish : Fish.values()) {
+                if (fish.getBiome() == biome) {
+                    fishable.add(fish);
+                }
+            }
+
+            double totalWeight = 0;
+
+            for (Fish fish : fishable) {
+                totalWeight += fish.getRarity().getChanceWeight();
+            }
+
+            double random = Math.random() * totalWeight;
+
+            Fish selected = null;
+            double current = 0;
+
+            for (Fish fish : fishable) {
+                current += fish.getRarity().getChanceWeight();
+
+                if (random < current) {
+                    selected = fish;
+                    break;
+                }
+            }
+
+            if (selected != null) {
+
+                Random rnd = new Random();
+
+                Trait trait;
+                Size size;
+
+                if (rnd.nextDouble() > 0.90) {
+
+                    List<Trait> possibleTraits = new ArrayList<>();
+
+                    for (Trait t : Trait.values()) {
+                        if (t != Trait.NORMAL) {
+                            possibleTraits.add(t);
+                        }
+                    }
+
+                    trait = possibleTraits.get(rnd.nextInt(possibleTraits.size()));
+
+                } else {
+                    trait = Trait.NORMAL;
+                }
+
+                if (rnd.nextDouble() > 0.80) {
+
+                    List<Size> possibleSizes = new ArrayList<>();
+
+                    for (Size t : Size.values()) {
+                        if (t != Size.NORMAL) {
+                            possibleSizes.add(t);
+                        }
+                    }
+
+                    size = possibleSizes.get(rnd.nextInt(possibleSizes.size()));
+
+                } else {
+                    size = Size.NORMAL;
+                }
+
+                ItemStack fishItem = FishHandler.CreateFish(selected, trait, size);
+
+                player.sendMessage("§aYou caught: " + fishItem.getItemMeta().getDisplayName() + "§a!");
+
+                boolean invFree = false;
+
+                for (ItemStack item : player.getInventory().getContents()) {
+                    if (item == null || item.getType() == Material.AIR) {
+                        invFree = true;
+                        break;
+                    }
+                }
+
+                if (invFree) {
+                    player.getInventory().addItem(fishItem);
+                } else {
+                    player.getWorld().dropItemNaturally(player.getLocation(), fishItem);
+                    player.sendMessage("§cYou'r inventory was full, the fish has been dropped.");
+                }
+
+            }
+            else {
+                player.sendMessage("§cYou didn't catch anything.");
+            }
         }
 
         public void cancel() {
