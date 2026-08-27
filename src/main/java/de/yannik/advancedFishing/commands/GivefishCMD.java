@@ -90,20 +90,15 @@ public class GivefishCMD implements CommandExecutor, TabCompleter {
             index++;
         }
 
-        /*
-        HIER DEINE FISCH LOGIK
-
-        Fish fish = Fish.valueOf(fishName.toUpperCase());
-        Trait t = trait != null ? Trait.valueOf(trait.toUpperCase()) : null;
-
-        ItemStack fishItem = FishFactory.createFish(fish, t, size);
-        target.getInventory().addItem(fishItem);
-        */
-
         Fish fish = Fish.fromKeyName(fishName);
 
-        Trait trait = null;
-        Size size = null;
+        Trait trait = Trait.NORMAL;
+        Size size = Size.NORMAL;
+
+        if (fish == null) {
+            sender.sendMessage("§cUnknown fish.");
+            return true;
+        }
 
         if (traitName != null) {
             try {
