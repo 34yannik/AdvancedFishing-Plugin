@@ -33,6 +33,11 @@ public class LevelHandler {
 
     // XP bis zum nächsten Level
     public static long getXPToNextLevel(int currentLevel) {
+
+        if (currentLevel >= MAX_LEVEL) {
+            return 0;
+        }
+
         long xpCurrent = getXPForLevel(currentLevel);
         long xpNext = getXPForLevel(currentLevel + 1);
         return xpNext - xpCurrent;
@@ -47,7 +52,8 @@ public class LevelHandler {
 
         leveledUp.add(stats.getLevel());
 
-        while (stats.getCurrentXp() >= getXPForLevel(stats.getLevel())) {
+        while (stats.getLevel() < MAX_LEVEL
+                && stats.getCurrentXp() >= getXPForLevel(stats.getLevel())) {
             stats.setCurrentXp(stats.getCurrentXp() - getXPForLevel(stats.getLevel()));
             stats.setLevel(stats.getLevel() + 1);
         }
